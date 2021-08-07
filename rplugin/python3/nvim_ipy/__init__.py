@@ -344,6 +344,17 @@ class IPythonPlugin(object):
     def ipy_write(self, args):
         self.append_outbuf(args[0])
 
+    @neovim.function("IPyCompleteForInput", sync=True)
+    def ipy_completefor(self,args):
+        st, line , pos =args
+        reply = self.waitfor(self.kc.complete(line, pos))
+        content = reply["content"]
+        start = content["cursor_start"]
+        return '\n'.join([ line[:start]+ x for x in content["matches"] ])
+        
+        # return '\n'.join([(st+x  if not x.startswith(st) else x) for x in content["matches"] ] )
+
+
     @neovim.function("IPyComplete")
     def ipy_complete(self,args):
         line = self.vim.current.line
